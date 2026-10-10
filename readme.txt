@@ -51,8 +51,8 @@ Desde la raiz del proyecto, con el entorno activado:
 
 El reporte queda en reports/report_api.html.
 
-El reporte HTML incluye las trazas de cada petición y respuesta (entradas,
-variables y salidas) en la sección Captured log call de cada caso. Con
+El reporte HTML incluye las trazas de cada peticion y respuesta (entradas,
+variables y salidas) en la seccion Captured log call de cada caso. Con
 --log-cli-level=INFO las mismas trazas se ven tambien en la consola.
 
 Las pruebas de API comparten un mismo usuario y dependen del orden del
