@@ -83,3 +83,71 @@ LIMITACIONES Y MEJORAS POSIBLES
 - Solo se cubre el flujo principal exitoso con standard_user; no se incluyeron casos de prueba negativos.
 - Si la suite crece, convendria pasar a Page Object. Con una sola prueba no
   se justifica.
+
+
+
+CONCLUSIONES - AUTOMATIZACION API PETSTORE
+==========================================
+
+RESULTADO
+---------
+La suite recorre el ciclo de vida de un usuario en el modulo User de
+PetStore (crear, consultar, actualizar, consultar y eliminar) con requests y
+Pytest. Son seis pruebas y pasan todas; en mi equipo la ejecucion completa
+tarda unos 4 segundos.
+
+
+DATOS DINAMICOS
+---------------
+PetStore es una API publica y compartida: cualquiera puede crear, modificar
+o borrar usuarios en cualquier momento. Con un username fijo, otra persona
+ejecutando el mismo ejercicio podria pisar mis datos a mitad de la prueba, o
+yo encontrarme con un usuario que quedo de una ejecucion anterior.
+
+Para evitarlo, cada ejecucion genera un sufijo de 8 caracteres con uuid4 y
+lo usa en el username y en el correo (bcarvajal_<sufijo>). El id es el
+timestamp en milisegundos. Asi cada corrida trabaja con un usuario propio y
+no depende del estado en que este la API.
+
+
+VALIDACIONES POR PASO
+---------------------
+- POST /user: codigo 200 y que el campo "message" de la respuesta sea el id
+  enviado.
+- GET /user/{username}: codigo 200 y que username y email coincidan con los
+  del usuario creado.
+- PUT /user/{username}: se envia el usuario completo cambiando firstName y
+  email. Se valida codigo 200.
+- GET /user/{username}: codigo 200 y que firstName y email sean los nuevos.
+  Este es el paso que realmente confirma la actualizacion, porque el PUT
+  responde 200 aunque no devuelve los datos guardados.
+- DELETE /user/{username}: codigo 200 y que "message" sea el username.
+- GET /user/{username} despues de eliminar: codigo 404 y mensaje
+  "User not found". No estaba en el enunciado, pero es la unica forma de
+  comprobar que el usuario se borro de verdad y no solo que el DELETE
+  respondio bien.
+
+
+DISEÑO ENCADENADO
+-----------------
+Las pruebas no son independientes: comparten el mismo usuario mediante un
+fixture con scope de modulo y se ejecutan en el orden en que estan escritas.
+Cada una parte del estado que dejo la anterior.
+
+Lo hice asi porque el ejercicio pide un flujo (crear, buscar, actualizar,
+buscar, eliminar) y separarlo en funciones permite ver en el reporte en que
+paso exacto falla. La contrapartida es que no se puede ejecutar un test
+suelto, y que si falla la creacion fallan todos los siguientes. En una suite
+mas grande lo resolveria con un fixture que cree y elimine el usuario para
+cada prueba.
+
+
+LIMITACIONES
+------------
+- Solo se cubre el flujo exitoso; no hay casos negativos (payload invalido,
+  usuario inexistente en PUT o DELETE).
+- No se valida el esquema completo de las respuestas, solo los campos
+  relevantes de cada paso.
+- Al ser un entorno publico de demostracion, la API puede estar caida o
+  responder lento por causas ajenas a la prueba. Todas las peticiones llevan
+  un timeout de 10 segundos para que en ese caso falle rapido.
