@@ -142,6 +142,17 @@ mas grande lo resolveria con un fixture que cree y elimine el usuario para
 cada prueba.
 
 
+TRAZABILIDAD
+------------
+Para dejar evidencia de las entradas y salidas use el modulo logging de la
+libreria estandar. Todas las llamadas pasan por una funcion send() que
+registra el metodo, la URL y el payload antes de enviar, y el codigo HTTP y
+el body al recibir la respuesta. Pytest captura esos registros por si solo y
+pytest-html los muestra en cada caso del reporte, asi que no hizo falta
+ningun plugin adicional ni escribir archivos de log aparte. Las pruebas
+siguen teniendo solo la llamada y sus asserts.
+
+
 LIMITACIONES
 ------------
 - Solo se cubre el flujo exitoso; no hay casos negativos (payload invalido,

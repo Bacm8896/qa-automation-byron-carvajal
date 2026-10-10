@@ -47,9 +47,13 @@ EJECUCION DE LA SUITE DE API
 ----------------------------
 Desde la raiz del proyecto, con el entorno activado:
 
-    python -m pytest -v tests_api/test_petstore_users_api.py --html=reports/report_api.html --self-contained-html
+    python -m pytest -v tests_api/test_petstore_users_api.py --html=reports/report_api.html --self-contained-html --log-cli-level=INFO
 
 El reporte queda en reports/report_api.html.
+
+El reporte HTML incluye las trazas de cada petición y respuesta (entradas,
+variables y salidas) en la sección Captured log call de cada caso. Con
+--log-cli-level=INFO las mismas trazas se ven tambien en la consola.
 
 Las pruebas de API comparten un mismo usuario y dependen del orden del
 archivo, por lo que hay que ejecutar el archivo completo y no un test suelto.
@@ -67,6 +71,12 @@ ESTRUCTURA DEL PROYECTO
     conftest.py                            fixture "driver" (abre y cierra Chrome)
     requirements.txt                       dependencias con version fijada
     conclusiones.txt                       conclusiones tecnicas del ejercicio
+    collections/petstore_user.postman_collection.json
+                                           coleccion de Postman con los 5 pasos de API
+
+La coleccion se importa en Postman (Import > File) y se ejecuta en orden.
+Usa las variables {{baseUrl}} y {{username}}, definidas en la propia
+coleccion; conviene cambiar el username antes de ejecutarla.
 
 
 QUE VALIDAN LAS PRUEBAS

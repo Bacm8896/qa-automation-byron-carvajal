@@ -1,0 +1,63 @@
+{
+  "info": {
+    "name": "PetStore - User",
+    "description": "Ciclo de vida de un usuario en Swagger PetStore: crear, consultar, actualizar, consultar y eliminar. Ejecutar en orden.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://petstore.swagger.io/v2" },
+    { "key": "username", "value": "bcarvajal_postman" }
+  ],
+  "item": [
+    {
+      "name": "1. Crear usuario",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/user",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": 880601,\n  \"username\": \"{{username}}\",\n  \"firstName\": \"Byron\",\n  \"lastName\": \"Carvajal\",\n  \"email\": \"{{username}}@example.com\",\n  \"password\": \"Test1234\",\n  \"phone\": \"0991234567\",\n  \"userStatus\": 1\n}",
+          "options": { "raw": { "language": "json" } }
+        }
+      }
+    },
+    {
+      "name": "2. Consultar usuario creado",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/user/{{username}}"
+      }
+    },
+    {
+      "name": "3. Actualizar nombre y correo",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/user/{{username}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": 880601,\n  \"username\": \"{{username}}\",\n  \"firstName\": \"Byron Andres\",\n  \"lastName\": \"Carvajal\",\n  \"email\": \"updated_{{username}}@example.com\",\n  \"password\": \"Test1234\",\n  \"phone\": \"0991234567\",\n  \"userStatus\": 1\n}",
+          "options": { "raw": { "language": "json" } }
+        }
+      }
+    },
+    {
+      "name": "4. Consultar usuario actualizado",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/user/{{username}}"
+      }
+    },
+    {
+      "name": "5. Eliminar usuario",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/user/{{username}}"
+      }
+    }
+  ]
+}
