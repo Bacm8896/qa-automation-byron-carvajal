@@ -1,0 +1,86 @@
+CONCLUSIONES - AUTOMATIZACION E2E SAUCEDEMO
+===========================================
+
+RESULTADO
+---------
+La prueba cubre el flujo de compra completo (login, carrito, checkout y
+confirmacion) en un solo caso y pasa de forma estable. En mi equipo tarda
+entre 5 y 10 segundos con Chrome en modo normal (no headless).
+
+
+SELECTORES
+----------
+SauceDemo expone un id en casi todos los elementos con los que se interactua
+(user-name, password, login-button, checkout, first-name, finish, etc.), asi
+que use By.ID siempre que fue posible. Los botones de "Add to cart" tambien
+tienen un id propio por producto (add-to-cart-sauce-labs-backpack), lo que
+evita depender de la posicion del producto en la lista.
+
+Para lo que no tiene id use By.CLASS_NAME con clases que describen el
+elemento y no su estilo: shopping_cart_badge, shopping_cart_link,
+inventory_item_name y complete-header. No hizo falta ningun XPath ni
+selectores CSS encadenados, que son los que primero se rompen cuando cambia
+el maquetado.
+
+
+SINCRONIZACION
+--------------
+No hay ningun time.sleep(). Todas las esperas son explicitas con
+WebDriverWait y expected_conditions, con un timeout de 10 segundos:
+
+- visibility_of_element_located antes de escribir en un formulario.
+- element_to_be_clickable antes de pulsar los botones de agregar.
+- url_contains para confirmar el cambio de pagina.
+- text_to_be_present_in_element para esperar a que el contador del carrito
+  marque 2 antes de abrirlo.
+
+La ventaja frente a una espera fija es que la prueba avanza en cuanto la
+condicion se cumple y solo consume el timeout cuando algo falla de verdad.
+Con sleeps habria que elegir entre una prueba lenta o una prueba inestable.
+
+
+AVISO DE CONTRASEÑA COMPROMETIDA EN CHROME
+------------------------------------------
+Al iniciar sesion con secret_sauce, Chrome detecta que la contraseña aparece
+en filtraciones conocidas y muestra un aviso para cambiarla. El aviso es del
+navegador, no de la pagina, por lo que no se puede cerrar con Selenium y
+queda encima del contenido.
+
+Lo resolvi en conftest.py desactivando esa comprobacion con una preferencia
+de Chrome al crear el driver:
+
+    profile.password_manager_leak_detection = False
+
+Es un ajuste puntual sobre el perfil temporal que usa la prueba; no toca la
+configuracion del Chrome del usuario ni desactiva otras funciones.
+
+
+INTEGRIDAD DE DATOS
+-------------------
+Los productos se definen una sola vez en el diccionario PRODUCTS (nombre e
+id del boton). Esa misma definicion se usa para agregarlos y para validar,
+de modo que lo que se comprueba es siempre lo que se selecciono.
+
+La validacion se hace en dos puntos:
+
+- En el carrito: la lista de nombres debe ser igual a la de PRODUCTS. Al
+  comparar listas completas se verifica a la vez la cantidad (exactamente
+  dos) y que los nombres coincidan.
+- En el resumen de compra (checkout-step-two): se repite la misma
+  comparacion, para confirmar que los productos no cambian entre el carrito
+  y el paso previo al pago.
+
+Al final se valida el encabezado de confirmacion. El sitio muestra
+actualmente "Thank you for your order!", asi que el texto se pasa a
+mayusculas antes de compararlo con "THANK YOU FOR YOUR ORDER".
+
+
+LIMITACIONES Y MEJORAS POSIBLES
+-------------------------------
+- Solo se ejecuta en Chrome. Para otros navegadores habria que parametrizar
+  el fixture.
+- No se validan precios, subtotal ni impuestos del resumen.
+- Solo se cubre el camino feliz con standard_user; no hay casos negativos
+  (usuario bloqueado, campos vacios en el checkout).
+- Si la suite crece, convendria pasar a Page Object. Con una sola prueba no
+  se justifica.
