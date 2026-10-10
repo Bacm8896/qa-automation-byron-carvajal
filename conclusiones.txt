@@ -80,7 +80,6 @@ LIMITACIONES Y MEJORAS POSIBLES
 - Solo se ejecuta en Chrome. Para otros navegadores habria que parametrizar
   el fixture.
 - No se validan precios, subtotal ni impuestos del resumen.
-- Solo se cubre el camino feliz con standard_user; no hay casos negativos
-  (usuario bloqueado, campos vacios en el checkout).
+- Solo se cubre el flujo principal exitoso con standard_user; no se incluyeron casos de prueba negativos.
 - Si la suite crece, convendria pasar a Page Object. Con una sola prueba no
   se justifica.
